@@ -212,7 +212,7 @@ That is, the usual thermometers behave as _first-order instruments_.
 
 The response of a first-order thermometer to a step change in temperature can be seen in the following plot, along with an interesting event.
 
-![Response to step function](/Users/maurifavaron/Documents/Research/Hypatia/temp_StepChange.png)
+![Response to step function](./temp_StepChange.png)
 
 Here you see the temperature reading adapting to the final temperature with a smooth rise, in fact along a negative-exponential path.
 

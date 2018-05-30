@@ -1,3 +1,43 @@
+# First example: a simple temperature and relative humidity reader, and some of its problems
+
+by: Mauri Favaron (development engineer at Servizi Territorio srl)
+
+## Foreword: why this example?
+
+This document starts with an Arduino sketch. This, just to stay practical, allowing you to grasp, see, touch, and measure yourself.
+
+The intention however is not to "teach" you some micro controller coding, or few elements of digital design - I assume you know this all on yourself. The intention, quite rather, is using techniques and concept familiar to you as a lever to lift interesting questions.
+
+Questions, pertaining the overall _sense_ of what we're doing. About the meaning of the measurement we take (or lack of it). On "deep" engineering problems, then.
+
+Engineering is the application of science to the solution of practical everyday problems. It's both a science, and a people thing. It has the power of changing the world for the better, but also to make it more miserable, and this may happen both because of what we know of the Nature (the physics, mathematics and biology side) and the nature of the problem itself, and the consequences its solution may have (the human side).
+
+A good engineer is an empathetic creature, able to stay in touch with the feelings and the needs of their "clients" (and users, voluntary and not, human and not); and, should remain curious, willing to get deeper in understanding how things do work and behave. And, sure, should also be a good technician, a translator of necessities into devices, software code, and other things.
+
+But too often, in the process of engineer "formation" much of the insistence goes towards this last aspect only. There is a big deal of "Mom, see how brilliantly I've solved the task you gave me!" This elicits the danger of molding narrowly-minded people, keen to show others their mental prowess - and indeed quite brilliant in objectively measurable terms - but, _mediocre_ just as engineers, as they may be as human beings.
+
+To these people, and to those who feel attracted by this kind of approach, an immense offering is addressed showing them how to build everything. That's a good thing, I'm not saying it should not be made.
+
+Just, my consideration is, you are an _engineer_, not a hobbyist. In your path there should be somewhat more than merely technology. Your actions will eventually shape the World, and it is your responsibility this happens to the good, whatever your employer may think or desire.
+
+Do you want to know in advance a method to detect a mediocre engineer? It's easy. Mediocre engineers are _grey_. They have no real passion. They may speak hours of technology, and never of people, of the beauty of a waterfall and the rainbow at its middle. They may design and craft many things, but will not really take people into account when doing this - and this reflects invariably in products packed of functionalities but a nightmare to use or explain. They will stay motionless when confronted with an emotionally loaded issue. They will never study, assuming they know all they need to already.
+
+You may feel this infallible crank engineer detection method evokes the stereotype of engineers as they are commonly imagined. And, you are right: there is a huge similarity. Mostly due to the fact that mediocre engineers are never in short supply, and people meet them so often to make a mental image of a whole category based on their common, dysfunctional characteristics.
+
+But, they are just dysfunctional. There are many excellent engineers, and sure you have met many of them already - only, maybe, you did not realized how brilliant they are, as they did not boast about such an irrelevant fact.
+
+Now, the question is, how may I become a good engineer, not a mediocre one?
+
+Unfortunately there is not a pre-formatted path, the definitive answer. There is _your_ path, unlike that of everyone else, and it is your task finding it.
+
+What I can do to help you is, showing you the word "obvious" does not exist, even in the narrow field of collecting simple environmental data.
+
+As I appeal to the human being you are, I've intentionally avoided to distract you with "professional technicalities". I've avoided to use big-boys-and-girls tools like JTAG debuggers, end professional IDEs like Atmel Studio (which are the things I use in the real world), and preferred the amateur-level Arduino IDE, Fritzing design CAD, and the like. So you can follow the technical part brainless.
+
+I've insisted, and quite heavily, on the _other_ side, beginning with this first "tutorial" - a tutorial on engineering, not Arduino craft(wo)manship.
+
+So, Alice, thank you for your attention and courage, and, let's begin our journey behind the looking glass.
+
 ## A very simple mission...
 
 The first system in this tutorial series is a tiny device which gathers readings of dry bulb (i.e. "usual") temperature and relative humidity, and prints them to an Arduino terminal session.

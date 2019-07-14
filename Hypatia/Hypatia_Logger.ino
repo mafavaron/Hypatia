@@ -50,28 +50,10 @@ bool bCanWrite;
 unsigned long iNumData;
 unsigned long iNumValid;
 unsigned long iNumTimeout;
-float rSumU;
-float rSumV;
-float rSumW;
-float rSumT;
-float rSumUU;
-float rSumVV;
-float rSumWW;
-float rSumTT;
-float rSumUV;
-float rSumUW;
-float rSumVW;
-float rSumUT;
-float rSumVT;
-float rSumWT;
 // -1- Statistical accumulators (for 1s display)
 unsigned long iNumSecData;
 unsigned long iNumSecValid;
 unsigned long iNumSecTimeout;
-float rSecSumU;
-float rSecSumV;
-float rSecSumW;
-float rSecSumT;
 
 
 void getConfig(void) {
@@ -234,20 +216,6 @@ void cleanCounters(void) {
   iNumData       = 0L;
   iNumValid      = 0L;
   iNumTimeout    = 0L;
-  rSumU          = 0.0f;
-  rSumV          = 0.0f;
-  rSumW          = 0.0f;
-  rSumT          = 0.0f;
-  rSumUU         = 0.0f;
-  rSumVV         = 0.0f;
-  rSumWW         = 0.0f;
-  rSumTT         = 0.0f;
-  rSumUV         = 0.0f;
-  rSumUW         = 0.0f;
-  rSumVW         = 0.0f;
-  rSumUT         = 0.0f;
-  rSumVT         = 0.0f;
-  rSumWT         = 0.0f;
 }
 
 
@@ -255,10 +223,6 @@ void cleanSecCounters(void) {
   iNumSecData       = 0L;
   iNumSecValid      = 0L;
   iNumSecTimeout    = 0L;
-  rSecSumU          = 0.0f;
-  rSecSumV          = 0.0f;
-  rSecSumW          = 0.0f;
-  rSecSumT          = 0.0f;
 }
 
 
@@ -528,21 +492,6 @@ void loop () {
       dateTo.second()
     );
     char buffer[512];
-    sprintf(
-      buffer,
-      "%s, %s, %d, %d, %d, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f",
-      sDateFrom,
-      sDateTo,
-      iNumData,
-      iNumValid,
-      iNumTimeout,
-      rSumU, rSumV, rSumW, rSumT,
-      rSumUU, rSumVV, rSumWW, rSumTT,
-      rSumUV, rSumUW, rSumVW,
-      rSumUT, rSumVT, rSumWT
-    );
-    Serial.println(buffer);
-    mySerial.println(buffer);
 
     // Prepare next step
     iOldTime = iCurrentTime / iAveragingTime;
@@ -554,57 +503,14 @@ void loop () {
   if(canAccumulate) {
     iNumValid++;
     iNumSecValid++;
-    rSumU += iVx / 100.0f;
-    rSumV += iVy / 100.0f;
-    rSumW += iVz / 100.0f;
-    rSumT += iT  / 100.0f;
-    rSumUU += (iVx / 100.0f) * (iVx / 100.0f);
-    rSumVV += (iVy / 100.0f) * (iVy / 100.0f);
-    rSumWW += (iVz / 100.0f) * (iVz / 100.0f);
-    rSumTT += (iT  / 100.0f) * (iT  / 100.0f);
-    rSumUV += (iVx / 100.0f) * (iVy / 100.0f);
-    rSumUW += (iVx / 100.0f) * (iVz / 100.0f);
-    rSumVW += (iVy / 100.0f) * (iVz / 100.0f);
-    rSumUT += (iVx / 100.0f) * (iT  / 100.0f);
-    rSumVT += (iVy / 100.0f) * (iT  / 100.0f);
-    rSumWT += (iVz / 100.0f) * (iT  / 100.0f);
-    rSecSumU += iVx / 100.0f;
-    rSecSumV += iVy / 100.0f;
-    rSecSumW += iVz / 100.0f;
-    rSecSumT += iT  / 100.0f;
   }
 
-  // Print 1s means
+  // Print 1s means, and clean their accumulators
   if(bGoOnPrinting) {
 
-    float rAvgVx;
-    float rAvgVy;
-    float rAvgVz;
-    float rAvgT;
-    
-    if(iNumValid > 0) {
-      rAvgVx = rSecSumU / (float)iNumSecValid;
-      rAvgVy = rSecSumV / (float)iNumSecValid;
-      rAvgVz = rSecSumW / (float)iNumSecValid;
-      rAvgT  = rSecSumT / (float)iNumSecValid;
-    }
-    else {
-      rAvgVx = -9999.90f;
-      rAvgVy = -9999.90f;
-      rAvgVz = -9999.90f;
-      rAvgT  = -9999.90f;
-    }
+    // Print
 
-    char buffer[128];
-    sprintf(
-      buffer,
-      "%s, %4d, %4d, %4d, %6.2f, %6.2f, %6.2f, %6.2f",
-      dateTime, iNumSecData, iNumSecValid, iNumSecTimeout,
-      rAvgVx, rAvgVy, rAvgVz,
-      rAvgT
-    );
-    Serial.println(buffer);
-
+    // Clean
     cleanSecCounters();
     
   }

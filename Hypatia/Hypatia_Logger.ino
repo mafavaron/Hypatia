@@ -8,6 +8,7 @@
 #include <RTClib.h>
 #include <SD.h>
 #include <string.h>
+#include <Adafruit_SHT31.h>
 
 RTC_DS3231 rtc;
 uint8_t  iOldYear;
@@ -18,25 +19,16 @@ uint8_t  iOldMinute;
 uint8_t  iOldSecond;
 uint32_t iOldTime;
 
+Adafruit_SHT31 sht31 = Adafruit_SHT31();
+
 // Input pin definitions
-const int COLD_START =  2;
-const int SPEED_0    = 10;
-const int SPEED_1    =  5;
-const int SPEED_2    =  4;
-const int SPEED_3    =  3;
-const int USA_1      =  9;
-const int APPLI_0    =  6;
-const int APPLI_1    =  7;
-const int APPLI_2    =  8;
+const int COLD_START =  12;
 
 // Other constants
 const String sEmpty = "      "; // 6 spaces: the USA-1 way to say "invalid data"
 
 // Configuration flags and values
 bool isColdStart;
-int  iSpeed;
-int  iUsa1;
-int  iAveragingTime;
 
 // Internal state
 // -1- SD card management
@@ -55,82 +47,6 @@ unsigned long iNumSecTimeout;
 void getConfig(void) {
   
   isColdStart = (digitalRead(COLD_START) == LOW);
-
-  int iSpeedIdx = (digitalRead(SPEED_0) == LOW) + 
-                  ((digitalRead(SPEED_1) == LOW) << 1) + 
-                  ((digitalRead(SPEED_2) == LOW) << 2) + 
-                  ((digitalRead(SPEED_3) == LOW) << 3);
-
-  switch(iSpeedIdx) {
-    case 0:
-      iSpeed =    300;
-      break;
-    case 1:
-      iSpeed =    600;
-      break;
-    case 2:
-      iSpeed =   1200;
-      break;
-    case 3:
-      iSpeed =   2400;
-      break;
-    case 4:
-      iSpeed =   4800;
-      break;
-    case 5:
-      iSpeed =   9600;
-      break;
-    case 6:
-      iSpeed =  19200;
-      break;
-    case 7:
-      iSpeed =  38400;
-      break;
-    case 8:
-      iSpeed =  57600;
-      break;
-    case 9:
-      iSpeed = 115200;
-      break;
-    default:
-      iSpeed =   9600;
-      break;
-  }
-  iSpeed = 19200;
-
-  int iUsa1 = (digitalRead(USA_1) == LOW);
-  
-  int iAveragingTimeIdx = (digitalRead(APPLI_0) == LOW) + 
-                          ((digitalRead(APPLI_1) == LOW) << 1) + 
-                          ((digitalRead(APPLI_2) == LOW) << 2);
-
-  switch(iAveragingTimeIdx) {
-    case 0:
-      iAveragingTime = 1*60;
-      break;
-    case 1:
-      iAveragingTime = 5*60;
-      break;
-    case 2:
-      iAveragingTime = 10*60;
-      break;
-    case 3:
-      iAveragingTime = 12*60;
-      break;
-    case 4:
-      iAveragingTime = 15*60;
-      break;
-    case 5:
-      iAveragingTime = 20*60;
-      break;
-    case 6:
-      iAveragingTime = 30*60;
-      break;
-    case 7:
-      iAveragingTime = 60*60;
-      break;
-  }
-  iAveragingTime = 60;
 
 }
 
@@ -231,14 +147,6 @@ void setup () {
   // Configure pins
   pinMode(LED_BUILTIN, OUTPUT);
   pinMode(COLD_START,  INPUT_PULLUP);
-  pinMode(SPEED_0,     INPUT_PULLUP);
-  pinMode(SPEED_1,     INPUT_PULLUP);
-  pinMode(SPEED_2,     INPUT_PULLUP);
-  pinMode(SPEED_3,     INPUT_PULLUP);
-  pinMode(USA_1,       INPUT_PULLUP);
-  pinMode(APPLI_0,     INPUT_PULLUP);
-  pinMode(APPLI_1,     INPUT_PULLUP);
-  pinMode(APPLI_2,     INPUT_PULLUP);
 
   // Read configuration from DIP and non-DIP switches
   getConfig();
@@ -251,11 +159,6 @@ void setup () {
     notifyFailure();
   }
   DateTime now = rtc.now();
-  iOldTime = now.unixtime() / iAveragingTime;
-
-  // Set sonic port as required by configuration
-  Serial1.begin(iSpeed);
-  Serial1.setTimeout(100L);
 
   // Get user date and time, if requested by configuration
   if(isColdStart) {
@@ -273,13 +176,6 @@ void setup () {
       Serial.println("---> Warm start: Using RTC date and time as they are");
     }
   }
-
-  // Dump DIP switch configuration
-  Serial.print("Ultrasonic anemometer assumed port speed: ");
-  Serial.println(iSpeed);
-  Serial.print("Averaging time:                           ");
-  Serial.println(iAveragingTime);
-  Serial.println("");
 
   // SD card initialization
   Serial.println("--> Starting SD");
@@ -327,7 +223,6 @@ void loop () {
   
   // Loop basic variables
   char dateTime[20];
-  long int iVx, iVy, iVz, iT;
 
   // Wait for next string, with timeout
   String sonicLine = Serial1.readStringUntil('\n');
@@ -350,18 +245,11 @@ void loop () {
     String sW = sonicLine.substring(25, 31);
     String sT = sonicLine.substring(35, 41);
     if(sU != sEmpty) {
-      if(iUsa1 != 0) {
-        // USA-1 and old uSonic-3
-        iVx = sV.toInt();
-        iVy = sU.toInt();
-      }
-      else {
-        // New uSonic-3
-        iVx = sU.toInt();
-        iVy = sV.toInt();
-      }
-      iVz = sW.toInt();
-      iT  = sT.toInt();
+      // USA-1 and old uSonic-3
+      int iVx = sV.toInt();
+      int iVy = sU.toInt();
+      int iVz = sW.toInt();
+      int iT  = sT.toInt();
       canAccumulate = true;
     }
   }
@@ -445,44 +333,6 @@ void loop () {
     }
   }
 
-  // Print accumulators, if time has come
-  if(iOldTime != iCurrentTime / iAveragingTime) {
-
-    uint32_t iFinalTimeRounded   = (iCurrentTime / iAveragingTime) * iAveragingTime;
-    uint32_t iInitialTimeRounded = iFinalTimeRounded - iAveragingTime;
-
-    DateTime dateFrom(iInitialTimeRounded);
-    DateTime dateTo(iFinalTimeRounded);
-    char sDateFrom[32];
-    sprintf(
-      sDateFrom,
-      "%4.4d-%2.2d-%2.2d %2.2d:%2.2d:%2.2d",
-      dateFrom.year(),
-      dateFrom.month(),
-      dateFrom.day(),
-      dateFrom.hour(),
-      dateFrom.minute(),
-      dateFrom.second()
-    );
-    char sDateTo[32];
-    sprintf(
-      sDateTo,
-      "%4.4d-%2.2d-%2.2d %2.2d:%2.2d:%2.2d",
-      dateTo.year(),
-      dateTo.month(),
-      dateTo.day(),
-      dateTo.hour(),
-      dateTo.minute(),
-      dateTo.second()
-    );
-    char buffer[512];
-
-    // Prepare next step
-    iOldTime = iCurrentTime / iAveragingTime;
-    cleanCounters();
-    
-  }
-  
   // Accumulate counters
   if(canAccumulate) {
     iNumValid++;

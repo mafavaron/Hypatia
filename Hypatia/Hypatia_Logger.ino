@@ -1,5 +1,4 @@
-// Hypatia_Logger - Data acquisition and preliminary processing
-//                  for Metek GmbH.
+// Hypatia_Logger - Data acquisition and preliminary processing of temperature and relative humidity data.
 //
 // Copyright 2019 by Servizi Territorio srl
 
@@ -29,9 +28,6 @@ const int USA_1      =  9;
 const int APPLI_0    =  6;
 const int APPLI_1    =  7;
 const int APPLI_2    =  8;
-
-// Auxiliary serial
-Uart mySerial(&sercom3, 0, 1, SERCOM_RX_PAD_1, UART_TX_PAD_0); // Create the new UART instance assigning it to pin 0 and 1
 
 // Other constants
 const String sEmpty = "      "; // 6 spaces: the USA-1 way to say "invalid data"
@@ -226,13 +222,6 @@ void cleanSecCounters(void) {
 }
 
 
-// Attach the interrupt handler to the SERCOM
-void SERCOM3_Handler()
-{
-  mySerial.IrqHandler();
-}
-
-
 // ******************** //
 // * Preparation Part * //
 // ******************** //
@@ -250,11 +239,6 @@ void setup () {
   pinMode(APPLI_0,     INPUT_PULLUP);
   pinMode(APPLI_1,     INPUT_PULLUP);
   pinMode(APPLI_2,     INPUT_PULLUP);
-
-  // Auxiliary serial
-  mySerial.begin(9600);
-  pinPeripheral(0, PIO_SERCOM); // Assign RX function to pin 0
-  pinPeripheral(1, PIO_SERCOM); // Assign TX function to pin 1
 
   // Read configuration from DIP and non-DIP switches
   getConfig();

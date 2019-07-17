@@ -34,11 +34,9 @@ bool isColdStart;
 // -1- SD card management
 File fData;
 bool bCanWrite;
-// -1- Statistical accumulators (for emission)
-unsigned long iNumData;
-unsigned long iNumValid;
-unsigned long iNumTimeout;
 // -1- Statistical accumulators (for 1s display)
+float         rSumTemp;
+float         rSumRelH;
 unsigned long iNumSecData;
 unsigned long iNumSecValid;
 unsigned long iNumSecTimeout;
@@ -97,41 +95,9 @@ bool getUserDateTime(void) {
 }
 
 
-// Send a Morse-encoded SOS, forever (until user fix things and resets)
-void notifyFailure(void) {
-  while(true) {
-    int i;
-    for(i=0; i<3; i++) {
-      digitalWrite(LED_BUILTIN, HIGH);
-      delay(100);
-      digitalWrite(LED_BUILTIN, LOW);
-      delay(70);
-    }
-    for(i=0; i<3; i++) {
-      digitalWrite(LED_BUILTIN, HIGH);
-      delay(300);
-      digitalWrite(LED_BUILTIN, LOW);
-      delay(70);
-    }
-    for(i=0; i<3; i++) {
-      digitalWrite(LED_BUILTIN, HIGH);
-      delay(100);
-      digitalWrite(LED_BUILTIN, LOW);
-      delay(70);
-    }
-    delay(2000);
-  }
-}
-
-
-void cleanCounters(void) {
-  iNumData       = 0L;
-  iNumValid      = 0L;
-  iNumTimeout    = 0L;
-}
-
-
 void cleanSecCounters(void) {
+  rSumTemp          = 0.0f;
+  rSumRelH          = 0.0f;
   iNumSecData       = 0L;
   iNumSecValid      = 0L;
   iNumSecTimeout    = 0L;
@@ -151,12 +117,17 @@ void setup () {
   // Read configuration from DIP and non-DIP switches
   getConfig();
 
+  // Setup console
   Serial.begin(9600);
   delay(2000); // Wait console to settle up
 
+  // Start SHT31
+  sht31.begin(0x44);
+
+  // Start RTC
   if(!rtc.begin()) {
     Serial.println("Missing or failed RTC");
-    notifyFailure();
+    digitalWrite(LED_BUILTIN, HIGH);
   }
   DateTime now = rtc.now();
 
@@ -182,7 +153,7 @@ void setup () {
   bool canWrite = SD.begin();
   if(!canWrite) {
     Serial.println("Connect to SD card failed");
-    notifyFailure();
+    digitalWrite(LED_BUILTIN, HIGH);
   }
 
   // Open first file in write mode, gathering the current time
@@ -206,13 +177,12 @@ void setup () {
   else bCanWrite = false;
   if(!bCanWrite) {
     Serial.println("File creation on SD card failed");
-    notifyFailure();
+    digitalWrite(LED_BUILTIN, HIGH);
   }
 
-  // Update counters
-  cleanCounters();
+  // Initialize counters
   cleanSecCounters();
-    
+
 }
 
 // ******************* //
@@ -224,35 +194,9 @@ void loop () {
   // Loop basic variables
   char dateTime[20];
 
-  // Wait for next string, with timeout
-  String sonicLine = Serial1.readStringUntil('\n');
-  int numChars = sonicLine.length();
-  bool canParseString = false;
-  if(numChars > 0) {
-    iNumData++;
-    iNumSecData++;
-    if(numChars == 42) {
-      canParseString = sonicLine[2] == 'x';
-    }
-  }
-  else iNumTimeout++;
-
-  // Perform string parsing
-  bool canAccumulate = false;
-  if(canParseString) {
-    String sU = sonicLine.substring(5, 11);
-    String sV = sonicLine.substring(15, 21);
-    String sW = sonicLine.substring(25, 31);
-    String sT = sonicLine.substring(35, 41);
-    if(sU != sEmpty) {
-      // USA-1 and old uSonic-3
-      int iVx = sV.toInt();
-      int iVy = sU.toInt();
-      int iVz = sW.toInt();
-      int iT  = sT.toInt();
-      canAccumulate = true;
-    }
-  }
+  // Perform readings
+  float rTemp = sht31.readTemperature();
+  float rRelH = sht31.readHumidity();
   
   // Get full time stamp
   DateTime now     = rtc.now();
@@ -302,7 +246,7 @@ void loop () {
     }
     else {
       Serial.println("File creation on SD card failed");
-      notifyFailure();
+      digitalWrite(LED_BUILTIN, HIGH);
     }
 
   }
@@ -316,10 +260,10 @@ void loop () {
   iOldSecond = iSecond;
   
   // Save data to SD file
-  if(bCanWrite && sonicLine.length() > 0 && sonicLine.length() < 50) {
+  if(bCanWrite) {
     char cvLine[64];
     digitalWrite(LED_BUILTIN, HIGH);
-    sprintf(cvLine, "%d, %s", iSecondTimeStamp, sonicLine.c_str());
+    sprintf(cvLine, "%d, %f, %f", iSecondTimeStamp, rTemp, rRelH);
     byte bytesWritten = fData.write(cvLine);
     delay(3);
     digitalWrite(LED_BUILTIN, LOW);
@@ -329,13 +273,14 @@ void loop () {
       Serial.print("  Bytes actually written to SD: ");
       Serial.print(bytesWritten);
       Serial.println("  => SD Card failure");
-      notifyFailure();
+      digitalWrite(LED_BUILTIN, HIGH);
     }
   }
 
   // Accumulate counters
-  if(canAccumulate) {
-    iNumValid++;
+  if(!isnan(rTemp) && !isnan(rRelH)) {
+    rSumTemp += rTemp;
+    rSumRelH += rRelH;
     iNumSecValid++;
   }
 

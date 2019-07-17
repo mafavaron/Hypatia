@@ -39,7 +39,6 @@ float         rSumTemp;
 float         rSumRelH;
 unsigned long iNumSecData;
 unsigned long iNumSecValid;
-unsigned long iNumSecTimeout;
 
 
 void getConfig(void) {
@@ -100,7 +99,6 @@ void cleanSecCounters(void) {
   rSumRelH          = 0.0f;
   iNumSecData       = 0L;
   iNumSecValid      = 0L;
-  iNumSecTimeout    = 0L;
 }
 
 
@@ -278,6 +276,7 @@ void loop () {
   }
 
   // Accumulate counters
+  iNumSecData++;
   if(!isnan(rTemp) && !isnan(rRelH)) {
     rSumTemp += rTemp;
     rSumRelH += rRelH;
@@ -288,6 +287,13 @@ void loop () {
   if(bGoOnPrinting) {
 
     // Print
+    if(iNumSecValid > 0L) {
+      Serial.print("Ta = ");
+      Serial.print(rSumTemp / iNumSecValid);
+      Serial.print(" °C,   R = ");
+      Serial.print(rSumRelH / iNumSecValid);
+      Serial.println(" %");
+    }
 
     // Clean
     cleanSecCounters();

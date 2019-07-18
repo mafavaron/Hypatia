@@ -102,6 +102,16 @@ void cleanSecCounters(void) {
 }
 
 
+void notifyFailure(long complement=500) {
+  while(true) {
+    digitalWrite(LED_BUILTIN, HIGH);
+    delay(1000-complement);
+    digitalWrite(LED_BUILTIN, LOW);
+    delay(complement);
+  }
+}
+
+
 // ******************** //
 // * Preparation Part * //
 // ******************** //
@@ -151,7 +161,7 @@ void setup () {
   bool canWrite = SD.begin();
   if(!canWrite) {
     Serial.println("Connect to SD card failed");
-    digitalWrite(LED_BUILTIN, HIGH);
+    notifyFailure(100);
   }
 
   // Open first file in write mode, gathering the current time
@@ -175,7 +185,7 @@ void setup () {
   else bCanWrite = false;
   if(!bCanWrite) {
     Serial.println("File creation on SD card failed");
-    digitalWrite(LED_BUILTIN, HIGH);
+    notifyFailure(200);
   }
 
   // Initialize counters
@@ -244,7 +254,7 @@ void loop () {
     }
     else {
       Serial.println("File creation on SD card failed");
-      digitalWrite(LED_BUILTIN, HIGH);
+      notifyFailure(500);
     }
 
   }
@@ -271,7 +281,7 @@ void loop () {
       Serial.print("  Bytes actually written to SD: ");
       Serial.print(bytesWritten);
       Serial.println("  => SD Card failure");
-      digitalWrite(LED_BUILTIN, HIGH);
+      notifyFailure(700);
     }
   }
 

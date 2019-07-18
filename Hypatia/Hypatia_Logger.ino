@@ -300,4 +300,7 @@ void loop () {
     
   }
 
+  // Loop delay
+  delay(100);
+
 }

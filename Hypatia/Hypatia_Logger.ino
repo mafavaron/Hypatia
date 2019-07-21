@@ -8,7 +8,7 @@
 #include <RTClib.h>
 #include <SD.h>
 #include <string.h>
-#include <Adafruit_SHT31.h>
+#include "Adafruit_SHT31.h"
 
 RTC_DS3231 rtc;
 uint8_t  iOldYear;
@@ -127,11 +127,12 @@ void setup() {
 
   // Setup console
   Serial.begin(9600);
+  delay(2000); // Wait console to settle up
 
-  while(true) {
-    Serial.println(isColdStart);
-    getConfig();
-    delay(1000);
+  // Start SHT31
+  if(!sht31.begin(0x44)) {
+    Serial.println("Missing SHT31");
+    notifyFailure(300);
   }
 
 }

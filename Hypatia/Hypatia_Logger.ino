@@ -117,7 +117,21 @@ void notifyFailure(long complement=500) {
 // ******************** //
 
 void setup() {
-  // put your setup code here, to run once:
+  
+  // Configure pins
+  pinMode(LED_BUILTIN, OUTPUT);
+  pinMode(COLD_START,  INPUT_PULLUP);
+
+  // Read configuration from DIP and non-DIP switches
+  getConfig();
+
+  // Setup console
+  Serial.begin(9600);
+
+  while(true) {
+    Serial.println(isColdStart);
+    delay(1000);
+  }
 
 }
 

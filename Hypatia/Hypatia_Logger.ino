@@ -135,6 +135,26 @@ void setup() {
     notifyFailure(300);
   }
 
+  // Start RTC
+  if(!rtc.begin()) {
+    Serial.println("Missing or failed RTC");
+    notifyFailure(300);
+  }
+  DateTime now = rtc.now();
+  while(true) {
+    DateTime now = rtc.now();
+    char fileName[10];
+    uint16_t uiYear  = now.year();
+    uint8_t uiMonth  = now.month();
+    uint8_t uiDay    = now.day();
+    uint8_t uiHour   = now.hour();
+    uint8_t uiMinute = now.minute();
+    uint8_t uiSecond = now.second();
+    sprintf(fileName, "%4.4d%2.2d%2.2d.%2.2d%2.2d%2.2d", uiYear, uiMonth, uiDay, uiHour, uiMinute, uiSecond);
+    Serial.println(fileName);
+    delay(1000);
+  }
+
 }
 
 void loop() {

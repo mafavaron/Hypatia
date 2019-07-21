@@ -22,7 +22,7 @@ uint32_t iOldTime;
 Adafruit_SHT31 sht31 = Adafruit_SHT31();
 
 // Input pin definitions
-const int COLD_START =  12;
+const int COLD_START =  13;
 
 // Other constants
 const String sEmpty = "      "; // 6 spaces: the USA-1 way to say "invalid data"
@@ -130,6 +130,7 @@ void setup() {
 
   while(true) {
     Serial.println(isColdStart);
+    getConfig();
     delay(1000);
   }
 

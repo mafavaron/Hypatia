@@ -141,20 +141,23 @@ void setup() {
     notifyFailure(300);
   }
   DateTime now = rtc.now();
-  while(true) {
-    DateTime now = rtc.now();
-    char fileName[10];
-    uint16_t uiYear  = now.year();
-    uint8_t uiMonth  = now.month();
-    uint8_t uiDay    = now.day();
-    uint8_t uiHour   = now.hour();
-    uint8_t uiMinute = now.minute();
-    uint8_t uiSecond = now.second();
-    sprintf(fileName, "%4.4d%2.2d%2.2d.%2.2d%2.2d%2.2d", uiYear, uiMonth, uiDay, uiHour, uiMinute, uiSecond);
-    Serial.println(fileName);
-    delay(1000);
-  }
 
+  // Get user date and time, if requested by configuration
+  if(isColdStart) {
+    Serial.println("---> Cold start: Assigning date and time manually");
+    Serial.println("     You have 30 seconds to enter an ISO date and time value (YYYY-MM-DD HH:MM:SS)");
+    bool isOK = getUserDateTime();
+  }
+  else {
+    if(rtc.lostPower()) {
+      Serial.println("---> Warm start attempted, but RTC got a power fail: get user date and time");
+      Serial.println("     You have 30 seconds to enter an ISO date and time value (YYYY-MM-DD HH:MM:SS)");
+      bool isOK = getUserDateTime();
+    }
+    else {
+      Serial.println("---> Warm start: Using RTC date and time as they are");
+    }
+  }
 }
 
 void loop() {

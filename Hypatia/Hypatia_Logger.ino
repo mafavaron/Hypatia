@@ -124,11 +124,6 @@ void setup() {
 
   // Read configuration from DIP and non-DIP switches
   getConfig();
-  while(true) {
-    getConfig();
-    Serial.println(isColdStart);
-    delay(1000);
-  }
 
   // Setup console
   Serial.begin(9600);

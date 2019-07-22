@@ -102,12 +102,13 @@ void cleanSecCounters(void) {
 }
 
 
-void notifyFailure(long complement=500) {
+void notifyFailure(long complement=500, String msg="") {
   while(true) {
     digitalWrite(LED_BUILTIN, HIGH);
     delay(1000-complement);
     digitalWrite(LED_BUILTIN, LOW);
     delay(complement);
+    Serial.println(msg);
   }
 }
 
@@ -132,13 +133,13 @@ void setup() {
   // Start SHT31
   if(!sht31.begin(0x44)) {
     Serial.println("Missing SHT31");
-    notifyFailure(300);
+    notifyFailure(300, "SHT31 not responding");
   }
 
   // Start RTC
   if(!rtc.begin()) {
     Serial.println("Missing or failed RTC");
-    notifyFailure(300);
+    notifyFailure(300, "RTC not responding");
   }
   DateTime now = rtc.now();
 
@@ -158,9 +159,17 @@ void setup() {
       Serial.println("---> Warm start: Using RTC date and time as they are");
     }
   }
+
+  // SD card initialization
+  Serial.println("--> Starting SD");
+  bool canWrite = SD.begin();
+  if(!canWrite) {
+    Serial.println("Connect to SD card failed");
+    notifyFailure(100, "SD card not operating");
+  }
+
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
   delay(1000);
 }

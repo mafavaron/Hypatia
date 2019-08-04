@@ -6,6 +6,7 @@
 #include "wiring_private.h"
 #include <Wire.h>
 #include <RTClib.h>
+#include <SPI.h>
 #include <SD.h>
 #include <string.h>
 #include "Adafruit_SHT31.h"

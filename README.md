@@ -1,5 +1,7 @@
 # The Hypatia Project
 
+by Patrizia Favaron (development engineer at Servizi Territorio srl)
+
 ## What is it?
 
 The Hypatia project is aimed at collecting together some ideas, of practical nature, for making the data-logging process more informative, and more useful.
@@ -40,7 +42,7 @@ To have an idea of what this project is really about, you may read the very firs
 
 ## Following the examples, and improving them
 
-Anyone willing to try can. Most examples in this repository work on the Feather M0 AdaLogger, a SAMD21-based tiny logger compatible with Arduino, designed and produced by AdaFruit Industries, and readily available. The reason I've chosen it are it's inexpensive, fully open-source hardware (all schematics and tech docs can be downloaded from the AdaFruit site), tiny enough to remain uninvasive, and with a standard LiPo battery-in connector. And, last but not least, accompanied by a wealth of lovely tutorials and examples, the way LadyAda and her colleagues do.
+Anyone willing to try can. Most examples in this repository work on the Arduino MKRZERO, a SAMD21-based tiny logger designed and produced by AdaFruit Industries, and readily available. The reason I've chosen it are it's inexpensive, fully open-source hardware (all schematics and tech docs can be downloaded from the AdaFruit site), tiny enough to remain uninvasive, and with a standard LiPo battery-in connector. And, last but not least, accompanied by a wealth of lovely tutorials and examples, the way LadyAda and her colleagues do.
 
 # Excerpt from First example: a simple temperature and relative humidity reader, and some of its problems ("doc/1_SimpleDataReader.pdf")
 
@@ -58,26 +60,3 @@ Engineering is the application of science to the solution of practical everyday 
 
 A good engineer is an empathetic creature, able to stay in touch with the feelings and the needs of their "clients" (and users, voluntary and not, human and not); and, should remain curious, willing to get deeper in understanding how things do work and behave. And, sure, should also be a good technician, a translator of necessities into devices, software code, and other things.
 
-But too often, in the process of engineer "formation" much of the insistence goes towards this last aspect only. There is a big deal of "Mom, see how brilliantly I've solved the task you gave me!" This elicits the danger of molding narrowly-minded people, keen to show others their mental prowess - and indeed quite brilliant in objectively measurable terms - but, _mediocre_ just as engineers, as they may be as human beings.
-
-To these people, and to those who feel attracted by this kind of approach, an immense offering is addressed showing them how to build everything. That's a good thing, I'm not saying it should not be made.
-
-Just, my consideration is, you are an _engineer_, not a hobbyist. In your path there should be somewhat more than merely technology. Your actions will eventually shape the World, and it is your responsibility this happens to the good, whatever your employer may think or desire.
-
-Do you want to know in advance a method to detect a mediocre engineer? It's easy. Mediocre engineers are _grey_. They have no real passion. They may speak hours of technology, and never of people, of the beauty of a waterfall and the rainbow at its middle. They may design and craft many things, but will not really take people into account when doing this - and this reflects invariably in products packed of functionalities but a nightmare to use or explain. They will stay motionless when confronted with an emotionally loaded issue. They will never study, assuming they know all they need to already.
-
-You may feel this infallible crank engineer detection method evokes the stereotype of engineers as they are commonly imagined. And, you are right: there is a huge similarity. Mostly due to the fact that mediocre engineers are never in short supply, and people meet them so often to make a mental image of a whole category based on their common, dysfunctional characteristics.
-
-But, they are just dysfunctional. There are many excellent engineers, and sure you have met many of them already - only, maybe, you did not realized how brilliant they are, as they did not boast about such an irrelevant fact.
-
-Now, the question is, how may I become a good engineer, not a mediocre one?
-
-Unfortunately there is not a pre-formatted path, the definitive answer. There is _your_ path, unlike that of everyone else, and it is your task finding it.
-
-What I can do to help you is, showing you the word "obvious" does not exist, even in the narrow field of collecting simple environmental data.
-
-As I appeal to the human being you are, I've intentionally avoided to distract you with "professional technicalities". I've avoided to use big-boys-and-girls tools like JTAG debuggers, end professional IDEs like Atmel Studio (which are the things I use in the real world), and preferred the amateur-level Arduino IDE, Fritzing design CAD, and the like. So you can follow the technical part brainless.
-
-I've insisted, and quite heavily, on the _other_ side, beginning with this first "tutorial" - a tutorial on engineering, not Arduino craft(wo)manship.
-
-So, Alice, thank you for your attention and courage, and, let's begin our journey behind the looking glass.

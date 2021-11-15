@@ -46,7 +46,7 @@ Anyone willing to try can. Most examples in this repository work on the Arduino 
 
 # Excerpt from First example: a simple temperature and relative humidity reader, and some of its problems ("doc/1_SimpleDataReader.pdf")
 
-by: Mauri Favaron (development engineer at Servizi Territorio srl)
+by: Patrizia Favaron (development engineer at Servizi Territorio srl)
 
 ## Foreword: why this example?
 
